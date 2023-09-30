@@ -68,9 +68,9 @@ public:
       test_pushMove_standard();
 
       // Delete
-
-      /* place your pop unit tests here */;
-      // test_pop_empty
+      test_pop_empty();
+      test_pop_full();
+      test_pop_partiallyFilled();
 
       // Status
       test_size_empty();
@@ -1199,6 +1199,101 @@ public:
          assertIndirect(s.container[2] == Spy(67));
          assertIndirect(s.container[3] == Spy(89));
       }
+   }
+
+   // remove an element from an empty vector
+   void test_pop_empty()
+   {  // setup
+      custom::stack<Spy> sSrc;
+      Spy::reset();
+      // exercise
+      sSrc.pop();
+      // verify
+      assertUnit(Spy::numAlloc() == 0);
+      assertUnit(Spy::numDelete() == 0);
+      assertUnit(Spy::numDefault() == 0);
+      assertUnit(Spy::numNondefault() == 0);
+      assertUnit(Spy::numCopy() == 0);
+      assertUnit(Spy::numCopyMove() == 0);
+      assertUnit(Spy::numAssign() == 0);
+      assertUnit(Spy::numAssignMove() == 0);
+      assertUnit(Spy::numDestructor() == 0);
+      assertEmptyFixture(sSrc);
+
+      // teardown
+      teardownStandardFixture(sSrc);
+   }
+
+   // popback when there are elements
+   void test_pop_full()
+   {  // setup
+      //      0    1    2    3
+      //    +----+----+----+----+
+      //    | 26 | 49 | 67 | 89 |
+      //    +----+----+----+----+
+      custom::stack<Spy> s;
+      setupStandardFixture(s);
+      Spy::reset();
+      // exercise
+      s.pop();
+      // verify
+      //      0    1    2    3
+      //    +----+----+----+----+
+      //    | 26 | 49 | 67 |    |
+      //    +----+----+----+----+
+      assertUnit(Spy::numAlloc() == 0);
+      assertUnit(Spy::numDelete() == 1);
+      assertUnit(Spy::numDefault() == 0);
+      std::cout << Spy::numDefault() << std::endl;
+      assertUnit(Spy::numNondefault() == 0);
+      assertUnit(Spy::numCopy() == 0);
+      assertUnit(Spy::numCopyMove() == 0);
+      assertUnit(Spy::numAssign() == 0);
+      assertUnit(Spy::numAssignMove() == 0);
+      assertUnit(Spy::numDestructor() == 1);
+
+      assertUnit(s.container.back() == 67);
+
+      // teardown
+      teardownStandardFixture(s);
+   }
+
+   // pop-back when there are elements
+   void test_pop_partiallyFilled()
+   {  // setup
+      //      0    1    2    3
+      //    +----+----+----+----+
+      //    | 26 | 49 |    |    |
+      //    +----+----+----+----+
+      custom::stack<Spy> s;
+
+      s.container.reserve(4);
+      s.container.push_back(26);
+      s.container.push_back(49);
+
+      Spy::reset();
+
+      // exercise
+      s.pop();
+      // verify
+      //      0    1    2    3
+      //    +----+----+----+----+
+      //    | 26 |    |    |    |
+      //    +----+----+----+----+
+      assertUnit(Spy::numAlloc() == 0);
+      assertUnit(Spy::numDelete() == 1);
+      assertUnit(Spy::numDefault() == 0);
+      assertUnit(Spy::numNondefault() == 0);
+      assertUnit(Spy::numCopy() == 0);
+      assertUnit(Spy::numCopyMove() == 0);
+      assertUnit(Spy::numAssign() == 0);
+      assertUnit(Spy::numAssignMove() == 0);
+      assertUnit(Spy::numDestructor() == 1);
+
+      assertUnit(s.container.back() == 26);
+
+      //teardown
+      teardownStandardFixture(s);
    }
 
 

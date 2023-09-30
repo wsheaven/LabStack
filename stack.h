@@ -15,13 +15,12 @@
  *    This will contain the class definition of:
  *       stack             : similar to std::stack
  * Author
- *    <your names here>
+ *    Sam Heaven, Abram Hansen 
  ************************************************************************/
 
 #pragma once
 
 #include <cassert>  // because I am paranoid
-//#include "vector.h"
 #include <vector>
 
 class TestStack; // forward declaration for unit tests
@@ -54,16 +53,21 @@ public:
    // Assign
    //
 
+   //copies values
    stack <T> & operator = (const stack <T> & rhs)
    {
       this->container = rhs.container;
       return *this;
    }
+
+   //steals values
    stack <T>& operator = (stack <T> && rhs)
    {
       container = std::move(rhs.container);
       return *this;
    }
+
+   //swaps values
    void swap(stack <T>& rhs)
    {
       std::swap(this->container, rhs.container); 
@@ -81,7 +85,7 @@ public:
    // 
 
    void push(const T& t) { container.push_back(t); }
-   void push(      T&& t) { container.push_back(t); }
+   void push(      T&& t) { container.push_back(std::move(t)); }
 
    //
    // Remove
@@ -89,7 +93,8 @@ public:
 
    void pop() 
    { 
-      container.pop_back();
+      if(!empty())
+         container.pop_back();
    }
 
    //
@@ -103,22 +108,4 @@ private:
   std::vector<T> container;  // underlying container
 };
 
-
-
 } // custom namespace
-
-
-
-/*
-stack<T>::move(stack <T> && rhs);
-stack<T> & stack<T>::operater=(const stack<T> & rhs); 
-Const T & stack<T>::top() const; 
-void stack<T>::push(T && t); 
-void stack<T>::pop(); 
-size_t stack<t>::size() const; 
-bool stack<T>::empty() const; 
-
-* 
-4  
-
-*/
